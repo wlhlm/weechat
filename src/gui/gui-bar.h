@@ -40,6 +40,8 @@ enum t_gui_bar_option
     GUI_BAR_OPTION_FILLING_LEFT_RIGHT,  /* filling when pos. is left/right  */
     GUI_BAR_OPTION_SIZE,                /* size of bar (in chars, 0 = auto) */
     GUI_BAR_OPTION_SIZE_MAX,            /* max size of bar (0 = no limit)   */
+    GUI_BAR_OPTION_COLUMN_SIZE,         /* size of column (0 = auto)        */
+    GUI_BAR_OPTION_COLUMN_SIZE_MAX,     /* max size of column (0 = no limit)*/
     GUI_BAR_OPTION_COLOR_FG,            /* default text color for bar       */
     GUI_BAR_OPTION_COLOR_DELIM,         /* default delimiter color for bar  */
     GUI_BAR_OPTION_COLOR_BG,            /* default background color for bar */
@@ -137,6 +139,8 @@ extern struct t_gui_bar *gui_bar_new (const char *name,
                                       const char *filling_left_right,
                                       const char *size,
                                       const char *size_max,
+                                      const char *column_size,
+                                      const char *column_size_max,
                                       const char *color_fg,
                                       const char *color_delim,
                                       const char *color_bg,

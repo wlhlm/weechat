@@ -3824,11 +3824,13 @@ API_FUNC(bar_new)
     v8::String::Utf8Value filling_left_right(args[7]);
     v8::String::Utf8Value size(args[8]);
     v8::String::Utf8Value size_max(args[9]);
-    v8::String::Utf8Value color_fg(args[10]);
-    v8::String::Utf8Value color_delim(args[11]);
-    v8::String::Utf8Value color_bg(args[12]);
-    v8::String::Utf8Value separator(args[13]);
-    v8::String::Utf8Value items(args[14]);
+    v8::String::Utf8Value column_size(args[10]);
+    v8::String::Utf8Value column_size_max(args[11]);
+    v8::String::Utf8Value color_fg(args[12]);
+    v8::String::Utf8Value color_delim(args[13]);
+    v8::String::Utf8Value color_bg(args[14]);
+    v8::String::Utf8Value separator(args[15]);
+    v8::String::Utf8Value items(args[16]);
 
     result = API_PTR2STR(weechat_bar_new (*name,
                                           *hidden,
@@ -3840,6 +3842,8 @@ API_FUNC(bar_new)
                                           *filling_left_right,
                                           *size,
                                           *size_max,
+                                          *column_size,
+                                          *column_size_max,
                                           *color_fg,
                                           *color_delim,
                                           *color_bg,

@@ -84,6 +84,7 @@ struct t_config_option *config_look_bar_more_down;
 struct t_config_option *config_look_bar_more_left;
 struct t_config_option *config_look_bar_more_right;
 struct t_config_option *config_look_bar_more_up;
+struct t_config_option *config_look_bar_more_line;
 struct t_config_option *config_look_bare_display_exit_on_input;
 struct t_config_option *config_look_bare_display_time_format;
 struct t_config_option *config_look_buffer_auto_renumber;
@@ -900,6 +901,22 @@ int
 config_check_prefix_buffer_align_more (void *data,
                                        struct t_config_option *option,
                                        const char *value)
+{
+    /* make C compiler happy */
+    (void) data;
+    (void) option;
+
+    return (utf8_strlen_screen (value) == 1) ? 1 : 0;
+}
+
+/*
+ * Checks option "weechat.look.bar_more_line"
+ */
+
+int
+config_check_bar_more_line (void *data,
+                              struct t_config_option *option,
+                              const char *value)
 {
     /* make C compiler happy */
     (void) data;
@@ -2225,6 +2242,13 @@ config_weechat_init_options ()
         N_("string displayed when bar can be scrolled up "
            "(for bars with filling different from \"horizontal\")"),
         NULL, 0, 0, "--", NULL, 0, NULL, NULL, &config_change_buffer_content, NULL, NULL, NULL);
+    config_look_bar_more_line = config_file_new_option (
+        weechat_config_file, ptr_section,
+        "bar_more_line", "string",
+        N_("char to display if a line is truncated when bar filling is set to vertical "
+           "(must be exactly on char on screen)"),
+        NULL, 0, 0, "", NULL, 0,
+        &config_check_bar_more_line, NULL, &config_change_buffer_content, NULL, NULL, NULL);
     config_look_bare_display_exit_on_input = config_file_new_option (
         weechat_config_file, ptr_section,
         "bare_display_exit_on_input", "boolean",

@@ -4329,12 +4329,13 @@ API_FUNC(bar_new)
 {
     Tcl_Obj *objp;
     char *result, *name, *hidden, *priority, *type, *conditions, *position;
-    char *filling_top_bottom, *filling_left_right, *size, *size_max, *color_fg;
-    char *color_delim, *color_bg, *separator, *bar_items;
+    char *filling_top_bottom, *filling_left_right, *size, *size_max;
+    char *column_size, *column_size_max, *color_fg, *color_delim, *color_bg;
+    char *separator, *bar_items;
     int i;
 
     API_INIT_FUNC(1, "bar_new", API_RETURN_EMPTY);
-    if (objc < 16)
+    if (objc < 18)
         API_WRONG_ARGS(API_RETURN_EMPTY);
 
     name = Tcl_GetStringFromObj (objv[1], &i);
@@ -4347,11 +4348,13 @@ API_FUNC(bar_new)
     filling_left_right = Tcl_GetStringFromObj (objv[8], &i);
     size = Tcl_GetStringFromObj (objv[9], &i);
     size_max = Tcl_GetStringFromObj (objv[10], &i);
-    color_fg = Tcl_GetStringFromObj (objv[11], &i);
-    color_delim = Tcl_GetStringFromObj (objv[12], &i);
-    color_bg = Tcl_GetStringFromObj (objv[13], &i);
-    separator = Tcl_GetStringFromObj (objv[14], &i);
-    bar_items = Tcl_GetStringFromObj (objv[15], &i);
+    column_size = Tcl_GetStringFromObj (objv[11], &i);
+    column_size_max = Tcl_GetStringFromObj (objv[12], &i);
+    color_fg = Tcl_GetStringFromObj (objv[13], &i);
+    color_delim = Tcl_GetStringFromObj (objv[14], &i);
+    color_bg = Tcl_GetStringFromObj (objv[15], &i);
+    separator = Tcl_GetStringFromObj (objv[16], &i);
+    bar_items = Tcl_GetStringFromObj (objv[17], &i);
 
     result = API_PTR2STR(weechat_bar_new (name,
                                           hidden,
@@ -4363,6 +4366,8 @@ API_FUNC(bar_new)
                                           filling_left_right,
                                           size,
                                           size_max,
+                                          column_size,
+                                          column_size_max,
                                           color_fg,
                                           color_delim,
                                           color_bg,

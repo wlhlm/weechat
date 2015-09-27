@@ -131,6 +131,7 @@ extern struct t_config_option *config_look_bar_more_down;
 extern struct t_config_option *config_look_bar_more_left;
 extern struct t_config_option *config_look_bar_more_right;
 extern struct t_config_option *config_look_bar_more_up;
+extern struct t_config_option *config_look_bar_more_line;
 extern struct t_config_option *config_look_bare_display_exit_on_input;
 extern struct t_config_option *config_look_bare_display_time_format;
 extern struct t_config_option *config_look_buffer_auto_renumber;

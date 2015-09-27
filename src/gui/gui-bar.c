@@ -49,12 +49,12 @@
 
 char *gui_bar_option_string[GUI_BAR_NUM_OPTIONS] =
 { "hidden", "priority", "type", "conditions", "position", "filling_top_bottom",
-  "filling_left_right", "size", "size_max", "color_fg", "color_delim",
-  "color_bg", "separator", "items" };
+  "filling_left_right", "size", "size_max", "column_size", "column_size_max",
+  "color_fg", "color_delim", "color_bg", "separator", "items" };
 char *gui_bar_option_default[GUI_BAR_NUM_OPTIONS] =
 { "0", "0", "0", "", "top", "horizontal",
-  "vertical", "0", "0", "default", "default",
-  "default", "off", "" };
+  "vertical", "0", "0", "0", "0",
+  "default", "default", "default", "off", "" };
 char *gui_bar_type_string[GUI_BAR_NUM_TYPES] =
 { "root", "window" };
 char *gui_bar_position_string[GUI_BAR_NUM_POSITIONS] =
@@ -1131,6 +1131,56 @@ gui_bar_config_change_size_max (void *data, struct t_config_option *option)
 }
 
 /*
+ * Callback called when "column_size" is changed.
+ */
+
+void
+gui_bar_config_change_column_size (void *data, struct t_config_option *option)
+{
+    struct t_gui_bar *ptr_bar;
+
+    /* make C compiler happy */
+    (void) data;
+
+    ptr_bar = gui_bar_search_with_option_name (option->name);
+    if (ptr_bar && !CONFIG_BOOLEAN(ptr_bar->options[GUI_BAR_OPTION_HIDDEN]))
+    {
+        gui_bar_refresh (ptr_bar);
+    }
+}
+
+/*
+ * Callback called when "column_size_max" is changed.
+ */
+
+void
+gui_bar_config_change_column_size_max (void *data, struct t_config_option *option)
+{
+    struct t_gui_bar *ptr_bar;
+    char value[32];
+
+    /* make C compiler happy */
+    (void) data;
+    (void) option;
+
+    ptr_bar = gui_bar_search_with_option_name (option->name);
+    if (ptr_bar && !CONFIG_BOOLEAN(ptr_bar->options[GUI_BAR_OPTION_HIDDEN]))
+    {
+        if ((CONFIG_INTEGER(ptr_bar->options[GUI_BAR_OPTION_COLUMN_SIZE_MAX]) > 0)
+            && (CONFIG_INTEGER(ptr_bar->options[GUI_BAR_OPTION_COLUMN_SIZE]) >
+                CONFIG_INTEGER(ptr_bar->options[GUI_BAR_OPTION_COLUMN_SIZE_MAX])))
+        {
+            snprintf (value, sizeof (value), "%d",
+                      CONFIG_INTEGER(ptr_bar->options[GUI_BAR_OPTION_COLUMN_SIZE_MAX]));
+            config_file_option_set (ptr_bar->options[GUI_BAR_OPTION_COLUMN_SIZE], value, 1);
+        }
+        gui_bar_refresh (ptr_bar);
+    }
+
+    gui_window_ask_refresh (1);
+}
+
+/*
  * Callback when color (fg or bg) is changed.
  */
 
@@ -1472,6 +1522,28 @@ gui_bar_create_option (const char *bar_name, int index_option, const char *value
                 &gui_bar_config_change_size_max, NULL,
                 NULL, NULL);
             break;
+        case GUI_BAR_OPTION_COLUMN_SIZE:
+            ptr_option = config_file_new_option (
+                weechat_config_file, weechat_config_section_bar,
+                option_name, "integer",
+                N_("column size in chars when filling is "
+                   "columns_horizontal or columns_vertical (0 = auto size)"),
+                NULL, 0, INT_MAX, value, NULL, 0,
+                NULL, NULL,
+                &gui_bar_config_change_column_size, NULL,
+                NULL, NULL);
+            break;
+        case GUI_BAR_OPTION_COLUMN_SIZE_MAX:
+            ptr_option = config_file_new_option (
+                weechat_config_file, weechat_config_section_bar,
+                option_name, "integer",
+                N_("max column size in chars when filling is "
+                   "columns_horizontal or columns_vertical (0 = no limit)"),
+                NULL, 0, INT_MAX, value, NULL, 0,
+                NULL, NULL,
+                &gui_bar_config_change_column_size_max , NULL,
+                NULL, NULL);
+            break;
         case GUI_BAR_OPTION_COLOR_FG:
             ptr_option = config_file_new_option (
                 weechat_config_file, weechat_config_section_bar,
@@ -1602,6 +1674,8 @@ gui_bar_new_with_options (const char *name,
                           struct t_config_option *filling_left_right,
                           struct t_config_option *size,
                           struct t_config_option *size_max,
+                          struct t_config_option *column_size,
+                          struct t_config_option *column_size_max,
                           struct t_config_option *color_fg,
                           struct t_config_option *color_delim,
                           struct t_config_option *color_bg,
@@ -1625,6 +1699,8 @@ gui_bar_new_with_options (const char *name,
     new_bar->options[GUI_BAR_OPTION_FILLING_LEFT_RIGHT] = filling_left_right;
     new_bar->options[GUI_BAR_OPTION_SIZE] = size;
     new_bar->options[GUI_BAR_OPTION_SIZE_MAX] = size_max;
+    new_bar->options[GUI_BAR_OPTION_COLUMN_SIZE] = column_size;
+    new_bar->options[GUI_BAR_OPTION_COLUMN_SIZE_MAX] = column_size_max;
     new_bar->options[GUI_BAR_OPTION_COLOR_FG] = color_fg;
     new_bar->options[GUI_BAR_OPTION_COLOR_DELIM] = color_delim;
     new_bar->options[GUI_BAR_OPTION_COLOR_BG] = color_bg;
@@ -1675,6 +1751,7 @@ gui_bar_new (const char *name, const char *hidden, const char *priority,
              const char *type, const char *conditions, const char *position,
              const char *filling_top_bottom, const char *filling_left_right,
              const char *size, const char *size_max,
+             const char *column_size, const char *column_size_max,
              const char *color_fg, const char *color_delim,
              const char *color_bg, const char *separators, const char *items)
 {
@@ -1682,6 +1759,7 @@ gui_bar_new (const char *name, const char *hidden, const char *priority,
     struct t_config_option *option_conditions, *option_position;
     struct t_config_option *option_filling_top_bottom, *option_filling_left_right;
     struct t_config_option *option_size, *option_size_max;
+    struct t_config_option *option_column_size, *option_column_size_max;
     struct t_config_option *option_color_fg, *option_color_delim;
     struct t_config_option *option_color_bg, *option_separator;
     struct t_config_option *option_items;
@@ -1720,6 +1798,10 @@ gui_bar_new (const char *name, const char *hidden, const char *priority,
                                          size);
     option_size_max = gui_bar_create_option (name, GUI_BAR_OPTION_SIZE_MAX,
                                              size_max);
+    option_column_size = gui_bar_create_option (name, GUI_BAR_OPTION_COLUMN_SIZE,
+                                                column_size);
+    option_column_size_max = gui_bar_create_option (name, GUI_BAR_OPTION_COLUMN_SIZE_MAX,
+                                                    column_size_max);
     option_color_fg = gui_bar_create_option (name, GUI_BAR_OPTION_COLOR_FG,
                                              color_fg);
     option_color_delim = gui_bar_create_option (name, GUI_BAR_OPTION_COLOR_DELIM,
@@ -1737,6 +1819,7 @@ gui_bar_new (const char *name, const char *hidden, const char *priority,
                                         option_filling_top_bottom,
                                         option_filling_left_right,
                                         option_size, option_size_max,
+                                        option_column_size, option_column_size_max,
                                         option_color_fg, option_color_delim,
                                         option_color_bg, option_separator,
                                         option_items);
@@ -1760,6 +1843,10 @@ gui_bar_new (const char *name, const char *hidden, const char *priority,
             config_file_option_free (option_size);
         if (option_size_max)
             config_file_option_free (option_size_max);
+        if (option_column_size)
+            config_file_option_free (option_column_size);
+        if (option_column_size_max)
+            config_file_option_free (option_column_size_max);
         if (option_color_fg)
             config_file_option_free (option_color_fg);
         if (option_color_delim)
@@ -1813,6 +1900,8 @@ gui_bar_use_temp_bars ()
                                       ptr_temp_bar->options[GUI_BAR_OPTION_FILLING_LEFT_RIGHT],
                                       ptr_temp_bar->options[GUI_BAR_OPTION_SIZE],
                                       ptr_temp_bar->options[GUI_BAR_OPTION_SIZE_MAX],
+                                      ptr_temp_bar->options[GUI_BAR_OPTION_COLUMN_SIZE],
+                                      ptr_temp_bar->options[GUI_BAR_OPTION_COLUMN_SIZE_MAX],
                                       ptr_temp_bar->options[GUI_BAR_OPTION_COLOR_FG],
                                       ptr_temp_bar->options[GUI_BAR_OPTION_COLOR_DELIM],
                                       ptr_temp_bar->options[GUI_BAR_OPTION_COLOR_BG],
@@ -1897,6 +1986,8 @@ gui_bar_create_default_input ()
                              "vertical",   /* filling_left_right */
                              "1",          /* size */
                              "0",          /* size_max */
+                             "0",          /* column_size */
+                             "0",          /* column_size_max */
                              "default",    /* color fg */
                              "cyan",       /* color delim */
                              "default",    /* color bg */
@@ -1934,6 +2025,8 @@ gui_bar_create_default_title ()
                          "vertical"  , /* filling_left_right */
                          "1",          /* size */
                          "0",          /* size_max */
+                         "0",          /* column_size */
+                         "0",          /* column_size_max */
                          "default",    /* color fg */
                          "cyan",       /* color delim */
                          "blue",       /* color bg */
@@ -1970,6 +2063,8 @@ gui_bar_create_default_status ()
                          "vertical",   /* filling_left_right */
                          "1",          /* size */
                          "0",          /* size_max */
+                         "0",          /* column_size */
+                         "0",          /* column_size_max */
                          "default",    /* color fg */
                          "cyan",       /* color delim */
                          "blue",       /* color bg */
@@ -2006,6 +2101,8 @@ gui_bar_create_default_nicklist ()
                          "vertical",         /* filling_left_right */
                          "0",                /* size */
                          "0",                /* size_max */
+                         "0",                /* column_size */
+                         "0",                /* column_size_max */
                          "default",          /* color fg */
                          "cyan",             /* color delim */
                          "default",          /* color bg */
@@ -2336,6 +2433,10 @@ gui_bar_add_to_infolist (struct t_infolist *infolist,
         return 0;
     if (!infolist_new_var_integer (ptr_item, "size_max", CONFIG_INTEGER(bar->options[GUI_BAR_OPTION_SIZE_MAX])))
         return 0;
+    if (!infolist_new_var_integer (ptr_item, "column_size", CONFIG_INTEGER(bar->options[GUI_BAR_OPTION_COLUMN_SIZE])))
+        return 0;
+    if (!infolist_new_var_integer (ptr_item, "column_size_max", CONFIG_INTEGER(bar->options[GUI_BAR_OPTION_COLUMN_SIZE_MAX])))
+        return 0;
     if (!infolist_new_var_string (ptr_item, "color_fg", gui_color_get_name (CONFIG_COLOR(bar->options[GUI_BAR_OPTION_COLOR_FG]))))
         return 0;
     if (!infolist_new_var_string (ptr_item, "color_delim", gui_color_get_name (CONFIG_COLOR(bar->options[GUI_BAR_OPTION_COLOR_DELIM]))))
@@ -2412,6 +2513,8 @@ gui_bar_print_log ()
                     gui_bar_filling_string[CONFIG_INTEGER(ptr_bar->options[GUI_BAR_OPTION_FILLING_LEFT_RIGHT])]);
         log_printf ("  size . . . . . . . . . : %d",    CONFIG_INTEGER(ptr_bar->options[GUI_BAR_OPTION_SIZE]));
         log_printf ("  size_max . . . . . . . : %d",    CONFIG_INTEGER(ptr_bar->options[GUI_BAR_OPTION_SIZE_MAX]));
+        log_printf ("  column_size. . . . . . : %d",    CONFIG_INTEGER(ptr_bar->options[GUI_BAR_OPTION_COLUMN_SIZE]));
+        log_printf ("  column_size_max. . . . : %d",    CONFIG_INTEGER(ptr_bar->options[GUI_BAR_OPTION_COLUMN_SIZE_MAX]));
         log_printf ("  color_fg . . . . . . . : %d (%s)",
                     CONFIG_COLOR(ptr_bar->options[GUI_BAR_OPTION_COLOR_FG]),
                     gui_color_get_name (CONFIG_COLOR(ptr_bar->options[GUI_BAR_OPTION_COLOR_FG])));

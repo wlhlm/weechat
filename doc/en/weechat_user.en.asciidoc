@@ -754,6 +754,15 @@ List of bar options:
   The maximum size for a bar, `0` = no limit (this option is used only if
   `size` = `0`).
 
+| column_size | integer ≥ 0 |
+  The size of the columns displayed when filling is columns_horizontal or
+  columns_vertical. A size of `0` means automatic, so the size will be computed
+  according to content displayed in columns.
+
+| column_size_max | integer ≥ 0 |
+  The maximum size for a bar, `0` = no limit (this option is used only if
+  `size` = `0`).
+
 | color_bg | color |
   The default background color for the bar.
 

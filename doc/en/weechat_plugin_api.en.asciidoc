@@ -12544,6 +12544,8 @@ struct t_gui_bar *weechat_bar_new (const char *name,
                                    const char *filling_left_right,
                                    const char *size,
                                    const char *size_max,
+                                   const char *column_size,
+                                   const char *column_size_max,
                                    const char *color_fg,
                                    const char *color_delim,
                                    const char *color_bg,
@@ -12579,6 +12581,8 @@ Arguments:
 ** 'columns_vertical': items are filled vertically, displayed with columns
 * 'size': bar size in chars (0 means automatic size)
 * 'size_max': max size for bar (0 means no max size)
+* 'column_size': column size in chars (0 means automatic size)
+* 'column_size_max': max size for column (0 means automatic size)
 * 'color_fg': color for text in bar
 * 'color_delim': color for delimiters in bar
 * 'color_bg': background color for bar
@@ -12606,6 +12610,8 @@ struct t_gui_bar *my_bar = weechat_bar_new ("mybar",
                                             "vertical",
                                             "0",
                                             "5",
+                                            "0",
+                                            "5",
                                             "default",
                                             "cyan",
                                             "blue",
@@ -12620,11 +12626,12 @@ Script (Python):
 # prototype
 bar = weechat.bar_new(name, hidden, priority, type, condition, position,
     filling_top_bottom, filling_left_right, size, size_max,
-    color_fg, color_delim, color_bg, separator, items)
+    column_size, column_size_max, color_fg, color_delim, color_bg,
+    separator, items)
 
 # example
 bar = weechat.bar_new("mybar", "off", "100", "window", "", "top", "horizontal", "vertical",
-    "0", "5", "default", "cyan", "blue", "off", "time,buffer_number+buffer_name")
+    "0", "5", "0", "5", "default", "cyan", "blue", "off", "time,buffer_number+buffer_name")
 ----
 
 ==== bar_set
@@ -12643,8 +12650,8 @@ Arguments:
 
 * 'bar': bar pointer
 * 'property': name, hidden, priority, conditions, position, filling_top_bottom,
-  filling_left_right, size, size_max, color_fg, color_delim, color_bg,
-  separator, items (see <<_bar_new,weechat_bar_new>>)
+  filling_left_right, size, size_max, column_size, column_size_max,
+  color_fg, color_delim, color_bg, separator, items (see <<_bar_new,weechat_bar_new>>)
 * 'value': new value for property
 
 Return value:

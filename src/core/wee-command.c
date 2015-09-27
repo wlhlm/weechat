@@ -274,7 +274,8 @@ COMMAND_CALLBACK(bar)
                              (pos_condition) ? pos_condition : "",
                              argv[4],
                              "horizontal", "vertical",
-                             argv[5], "0", "default", "default", "default",
+                             argv[5], "0", "0", "0",
+                             "default", "default", "default",
                              argv[6], argv_eol[7]))
             {
                 gui_chat_printf (NULL, _("Bar \"%s\" created"),

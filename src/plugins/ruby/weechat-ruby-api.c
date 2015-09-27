@@ -4836,12 +4836,15 @@ weechat_ruby_api_bar_new (VALUE class, VALUE name, VALUE hidden,
                           VALUE priority, VALUE type, VALUE conditions,
                           VALUE position, VALUE filling_top_bottom,
                           VALUE filling_left_right, VALUE size,
-                          VALUE size_max, VALUE color_fg, VALUE color_delim,
-                          VALUE color_bg, VALUE separator, VALUE items)
+                          VALUE size_max, VALUE column_size,
+                          VALUE column_size_max, VALUE color_fg,
+                          VALUE color_delim, VALUE color_bg, VALUE separator,
+                          VALUE items)
 {
     char *c_name, *c_hidden, *c_priority, *c_type, *c_conditions, *c_position;
     char *c_filling_top_bottom, *c_filling_left_right, *c_size, *c_size_max;
-    char *c_color_fg, *c_color_delim, *c_color_bg, *c_separator, *c_items;
+    char *c_column_size, *c_column_size_max, *c_color_fg, *c_color_delim;
+    char *c_color_bg, *c_separator, *c_items;
     char *result;
     VALUE return_value;
 
@@ -4849,6 +4852,7 @@ weechat_ruby_api_bar_new (VALUE class, VALUE name, VALUE hidden,
     if (NIL_P (name) || NIL_P (hidden) || NIL_P (priority) || NIL_P (type)
         || NIL_P (conditions) || NIL_P (position) || NIL_P (filling_top_bottom)
         || NIL_P (filling_left_right) || NIL_P (size) || NIL_P (size_max)
+        || NIL_P (column_size) || NIL_P (column_size_max)
         || NIL_P (color_fg) || NIL_P (color_delim) || NIL_P (color_bg)
         || NIL_P (separator) || NIL_P (items))
         API_WRONG_ARGS(API_RETURN_EMPTY);
@@ -4863,6 +4867,8 @@ weechat_ruby_api_bar_new (VALUE class, VALUE name, VALUE hidden,
     Check_Type (filling_left_right, T_STRING);
     Check_Type (size, T_STRING);
     Check_Type (size_max, T_STRING);
+    Check_Type (column_size, T_STRING);
+    Check_Type (column_size_max, T_STRING);
     Check_Type (color_fg, T_STRING);
     Check_Type (color_delim, T_STRING);
     Check_Type (color_bg, T_STRING);
@@ -4879,6 +4885,8 @@ weechat_ruby_api_bar_new (VALUE class, VALUE name, VALUE hidden,
     c_filling_left_right = StringValuePtr (filling_left_right);
     c_size = StringValuePtr (size);
     c_size_max = StringValuePtr (size_max);
+    c_column_size = StringValuePtr (column_size);
+    c_column_size_max = StringValuePtr (column_size_max);
     c_color_fg = StringValuePtr (color_fg);
     c_color_delim = StringValuePtr (color_delim);
     c_color_bg = StringValuePtr (color_bg);
@@ -4895,6 +4903,8 @@ weechat_ruby_api_bar_new (VALUE class, VALUE name, VALUE hidden,
                                           c_filling_left_right,
                                           c_size,
                                           c_size_max,
+                                          c_column_size,
+                                          c_column_size_max,
                                           c_color_fg,
                                           c_color_delim,
                                           c_color_bg,

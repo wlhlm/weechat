@@ -4064,23 +4064,26 @@ API_FUNC(bar_new)
 {
     const char *name, *hidden, *priority, *type, *conditions, *position;
     const char *filling_top_bottom, *filling_left_right, *size, *size_max;
-    const char *color_fg, *color_delim, *color_bg, *separator, *items;
+    const char *column_size, *column_size_max, *color_fg, *color_delim;
+    const char *color_bg, *separator, *items;
     char *result;
 
     API_INIT_FUNC(1, "bar_new", API_RETURN_EMPTY);
-    if (lua_gettop (L) < 15)
+    if (lua_gettop (L) < 17)
         API_WRONG_ARGS(API_RETURN_EMPTY);
 
-    name = lua_tostring (L, -15);
-    hidden = lua_tostring (L, -14);
-    priority = lua_tostring (L, -13);
-    type = lua_tostring (L, -12);
-    conditions = lua_tostring (L, -11);
-    position = lua_tostring (L, -10);
-    filling_top_bottom = lua_tostring (L, -9);
-    filling_left_right = lua_tostring (L, -8);
-    size = lua_tostring (L, -7);
-    size_max = lua_tostring (L, -6);
+    name = lua_tostring (L, -17);
+    hidden = lua_tostring (L, -16);
+    priority = lua_tostring (L, -15);
+    type = lua_tostring (L, -14);
+    conditions = lua_tostring (L, -13);
+    position = lua_tostring (L, -12);
+    filling_top_bottom = lua_tostring (L, -11);
+    filling_left_right = lua_tostring (L, -10);
+    size = lua_tostring (L, -9);
+    size_max = lua_tostring (L, -8);
+    column_size = lua_tostring (L, -7);
+    column_size_max = lua_tostring (L, -6);
     color_fg = lua_tostring (L, -5);
     color_delim = lua_tostring (L, -4);
     color_bg = lua_tostring (L, -3);
@@ -4097,6 +4100,8 @@ API_FUNC(bar_new)
                                           filling_left_right,
                                           size,
                                           size_max,
+                                          column_size,
+                                          column_size_max,
                                           color_fg,
                                           color_delim,
                                           color_bg,

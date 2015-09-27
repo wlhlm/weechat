@@ -3986,8 +3986,9 @@ API_FUNC(bar_search)
 API_FUNC(bar_new)
 {
     char *result, *name, *hidden, *priority, *type, *conditions, *position;
-    char *filling_top_bottom, *filling_left_right, *size, *size_max, *color_fg;
-    char *color_delim, *color_bg, *separator, *bar_items;
+    char *filling_top_bottom, *filling_left_right, *size, *size_max;
+    char *column_size, *column_size_max, *color_fg, *color_delim, *color_bg;
+    char *separator, *bar_items;
     dXSARGS;
 
     API_INIT_FUNC(1, "bar_new", API_RETURN_EMPTY);
@@ -4004,11 +4005,13 @@ API_FUNC(bar_new)
     filling_left_right = SvPV_nolen (ST (7));
     size = SvPV_nolen (ST (8));
     size_max = SvPV_nolen (ST (9));
-    color_fg = SvPV_nolen (ST (10));
-    color_delim = SvPV_nolen (ST (11));
-    color_bg = SvPV_nolen (ST (12));
-    separator = SvPV_nolen (ST (13));
-    bar_items = SvPV_nolen (ST (14));
+    column_size = SvPV_nolen (ST (10));
+    column_size_max = SvPV_nolen (ST (11));
+    color_fg = SvPV_nolen (ST (12));
+    color_delim = SvPV_nolen (ST (13));
+    color_bg = SvPV_nolen (ST (14));
+    separator = SvPV_nolen (ST (15));
+    bar_items = SvPV_nolen (ST (16));
 
     result = API_PTR2STR(weechat_bar_new (name,
                                           hidden,
@@ -4020,6 +4023,8 @@ API_FUNC(bar_new)
                                           filling_left_right,
                                           size,
                                           size_max,
+                                          column_size,
+                                          column_size_max,
                                           color_fg,
                                           color_delim,
                                           color_bg,

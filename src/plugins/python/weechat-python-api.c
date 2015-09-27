@@ -4015,7 +4015,8 @@ API_FUNC(bar_new)
 {
     char *name, *hidden, *priority, *type, *conditions, *position;
     char *filling_top_bottom, *filling_left_right, *size, *size_max;
-    char *color_fg, *color_delim, *color_bg, *separator, *items, *result;
+    char *column_size, *column_size_max, *color_fg, *color_delim, *color_bg;
+    char *separator, *items, *result;
     PyObject *return_value;
 
     API_INIT_FUNC(1, "bar_new", API_RETURN_EMPTY);
@@ -4029,6 +4030,8 @@ API_FUNC(bar_new)
     filling_left_right = NULL;
     size = NULL;
     size_max = NULL;
+    column_size = NULL;
+    column_size_max = NULL;
     color_fg = NULL;
     color_delim = NULL;
     color_bg = NULL;
@@ -4036,7 +4039,8 @@ API_FUNC(bar_new)
     items = NULL;
     if (!PyArg_ParseTuple (args, "sssssssssssssss", &name, &hidden, &priority,
                            &type, &conditions, &position, &filling_top_bottom,
-                           &filling_left_right, &size, &size_max, &color_fg,
+                           &filling_left_right, &size, &size_max,
+                           &column_size, &column_size_max, &color_fg,
                            &color_delim, &color_bg, &separator, &items))
         API_WRONG_ARGS(API_RETURN_EMPTY);
 
@@ -4050,6 +4054,8 @@ API_FUNC(bar_new)
                                           filling_left_right,
                                           size,
                                           size_max,
+                                          column_size,
+                                          column_size_max,
                                           color_fg,
                                           color_delim,
                                           color_bg,

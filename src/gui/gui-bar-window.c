@@ -678,15 +678,15 @@ gui_bar_window_content_get_with_filling (struct t_gui_bar_window *bar_window,
                                          struct t_gui_window *window)
 {
     enum t_gui_bar_filling filling;
-    const char *ptr_content;
+    const char *ptr_content, *more_color;
     char *content, *content2, str_reinit_color[32];
     char str_reinit_color_space[32], str_reinit_color_space_start_line[32];
     char str_start_item[32];
     char *item_value, *item_value2, ****split_items, **linear_items;
     int index_content, content_length, i, j, k, sub, index;
     int at_least_one_item, first_sub_item;
-    int length_reinit_color_space, length_start_item, length;
-    int max_length, max_length_screen;
+    int length_reinit_color_space, length_start_item, length, length_spacing;
+    int more_length, max_length, max_length_screen;
     int total_items, columns, lines;
 
     if (!bar_window
@@ -861,6 +861,17 @@ gui_bar_window_content_get_with_filling (struct t_gui_bar_window *bar_window,
                 else
                     split_items[i] = NULL;
             }
+            if ((CONFIG_INTEGER(bar_window->bar->options[GUI_BAR_OPTION_COLUMN_SIZE]) == 0)
+                && (CONFIG_INTEGER(bar_window->bar->options[GUI_BAR_OPTION_COLUMN_SIZE_MAX]) > 0)
+                && (max_length_screen > CONFIG_INTEGER(bar_window->bar->options[GUI_BAR_OPTION_COLUMN_SIZE_MAX])))
+            {
+                max_length_screen = CONFIG_INTEGER(bar_window->bar->options[GUI_BAR_OPTION_COLUMN_SIZE_MAX]);
+            }
+            else if (CONFIG_INTEGER(bar_window->bar->options[GUI_BAR_OPTION_COLUMN_SIZE]) > 0)
+            {
+                max_length_screen = CONFIG_INTEGER(bar_window->bar->options[GUI_BAR_OPTION_COLUMN_SIZE]);
+            }
+
             if ((CONFIG_INTEGER(bar_window->bar->options[GUI_BAR_OPTION_POSITION]) == GUI_BAR_POSITION_BOTTOM)
                 || (CONFIG_INTEGER(bar_window->bar->options[GUI_BAR_OPTION_POSITION]) == GUI_BAR_POSITION_TOP))
             {
@@ -905,10 +916,13 @@ gui_bar_window_content_get_with_filling (struct t_gui_bar_window *bar_window,
                     }
                 }
 
+                more_color = gui_color_from_option (config_color_bar_more);
+
                 /* build content with lines and columns */
                 content_length = 1 + (lines *
                                       ((columns *
-                                        (max_length + max_length_screen + length_reinit_color_space)) + 1));
+                                        (max_length + strlen (CONFIG_STRING(config_look_bar_more_line)) +
+                                            strlen (more_color) + length_reinit_color_space)) + 1));
                 content2 = realloc (content, content_length);
                 if (!content2)
                 {
@@ -938,11 +952,35 @@ gui_bar_window_content_get_with_filling (struct t_gui_bar_window *bar_window,
                         }
                         else
                         {
-                            strcpy (content + index_content, linear_items[index]);
-                            index_content += strlen (linear_items[index]);
-                            length = max_length_screen -
+                            if ((gui_chat_strlen_screen (linear_items[index]) > max_length_screen)
+                                && (CONFIG_STRING(config_look_bar_more_line)
+                                    && CONFIG_STRING(config_look_bar_more_line)[0]))
+                            {
+                                more_length = (max_length_screen - 1);
+                            }
+                            else
+                            {
+                                more_length = max_length_screen;
+                            }
+                            length = gui_chat_string_add_offset_screen (linear_items[index], more_length) -
+                                linear_items[index];
+                            strncpy (content + index_content, linear_items[index], length);
+                            index_content += length;
+
+                            if (more_length < max_length_screen)
+                            {
+                                if (more_color)
+                                {
+                                    strcpy (content + index_content, more_color);
+                                    index_content += strlen (more_color);
+                                }
+                                strcpy (content + index_content, CONFIG_STRING(config_look_bar_more_line));
+                                index_content += strlen (CONFIG_STRING(config_look_bar_more_line));
+                            }
+
+                            length_spacing = max_length_screen -
                                 gui_chat_strlen_screen (linear_items[index]);
-                            for (k = 0; k < length; k++)
+                            for (k = 0; k < length_spacing; k++)
                             {
                                 content[index_content++] = ' ';
                             }

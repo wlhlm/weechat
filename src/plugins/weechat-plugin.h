@@ -57,7 +57,7 @@ struct timeval;
  * please change the date with current one; for a second change at same
  * date, increment the 01, otherwise please keep 01.
  */
-#define WEECHAT_PLUGIN_API_VERSION "20150822-01"
+#define WEECHAT_PLUGIN_API_VERSION "20151003-01"
 
 /* macros for defining plugin infos */
 #define WEECHAT_PLUGIN_NAME(__name)                                     \
@@ -846,6 +846,8 @@ struct t_weechat_plugin
                                   const char *filling_left_right,
                                   const char *size,
                                   const char *size_max,
+                                  const char *column_size,
+                                  const char *column_size_max,
                                   const char *color_fg,
                                   const char *color_delim,
                                   const char *color_bg,
@@ -1658,15 +1660,16 @@ extern int weechat_plugin_end (struct t_weechat_plugin *plugin);
 #define weechat_bar_new(__name, __hidden, __priority, __type,           \
                         __condition, __position, __filling_top_bottom,  \
                         __filling_left_right, __size, __size_max,       \
-                        __color_fg, __color_delim, __color_bg,          \
-                        __separator, __items)                           \
+                        __column_size, __column_size_max, __color_fg,   \
+                        __color_delim, __color_bg, __separator, __items)\
     (weechat_plugin->bar_new)(__name, __hidden, __priority, __type,     \
                               __condition, __position,                  \
                               __filling_top_bottom,                     \
                               __filling_left_right,                     \
-                              __size, __size_max, __color_fg,           \
-                              __color_delim, __color_bg, __separator,   \
-                              __items)
+                              __size, __size_max,                       \
+                              __column_size, __column_size_max,         \
+                              __color_fg, __color_delim, __color_bg,    \
+                              __separator, __items)
 #define weechat_bar_set(__bar, __property, __value)                     \
     (weechat_plugin->bar_set)(__bar, __property, __value)
 #define weechat_bar_update(__name)                                      \

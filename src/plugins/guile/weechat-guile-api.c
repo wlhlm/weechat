@@ -3839,13 +3839,13 @@ SCM
 weechat_guile_api_bar_new (SCM args)
 {
     SCM name, hidden, priority, type, conditions, position, filling_top_bottom;
-    SCM filling_left_right, size, size_max, color_fg, color_delim, color_bg;
-    SCM separator, items;
+    SCM filling_left_right, size, size_max, column_size, column_size_max;
+    SCM color_fg, color_delim, color_bg, separator, items;
     char *result;
     SCM return_value;
 
     API_INIT_FUNC(1, "bar_new", API_RETURN_EMPTY);
-    if (!scm_list_p (args) || (scm_to_int (scm_length (args)) != 15))
+    if (!scm_list_p (args) || (scm_to_int (scm_length (args)) != 17))
         API_WRONG_ARGS(API_RETURN_EMPTY);
 
     name = scm_list_ref (args, scm_from_int (0));
@@ -3858,17 +3858,20 @@ weechat_guile_api_bar_new (SCM args)
     filling_left_right = scm_list_ref (args, scm_from_int (7));
     size = scm_list_ref (args, scm_from_int (8));
     size_max = scm_list_ref (args, scm_from_int (9));
-    color_fg = scm_list_ref (args, scm_from_int (10));
-    color_delim = scm_list_ref (args, scm_from_int (11));
-    color_bg = scm_list_ref (args, scm_from_int (12));
-    separator = scm_list_ref (args, scm_from_int (13));
-    items = scm_list_ref (args, scm_from_int (14));
+    column_size = scm_list_ref (args, scm_from_int (10));
+    column_size_max = scm_list_ref (args, scm_from_int (11));
+    color_fg = scm_list_ref (args, scm_from_int (12));
+    color_delim = scm_list_ref (args, scm_from_int (13));
+    color_bg = scm_list_ref (args, scm_from_int (14));
+    separator = scm_list_ref (args, scm_from_int (15));
+    items = scm_list_ref (args, scm_from_int (16));
 
     if (!scm_is_string (name) || !scm_is_string (hidden)
         || !scm_is_string (priority) || !scm_is_string (type)
         || !scm_is_string (conditions) || !scm_is_string (position)
         || !scm_is_string (filling_top_bottom) || !scm_is_string (filling_left_right)
         || !scm_is_string (size) || !scm_is_string (size_max)
+        || !scm_is_string (column_size) || !scm_is_string (column_size_max)
         || !scm_is_string (color_fg) || !scm_is_string (color_delim)
         || !scm_is_string (color_bg) || !scm_is_string (separator)
         || !scm_is_string (items))
@@ -3884,6 +3887,8 @@ weechat_guile_api_bar_new (SCM args)
                                           API_SCM_TO_STRING(filling_left_right),
                                           API_SCM_TO_STRING(size),
                                           API_SCM_TO_STRING(size_max),
+                                          API_SCM_TO_STRING(column_size),
+                                          API_SCM_TO_STRING(column_size_max),
                                           API_SCM_TO_STRING(color_fg),
                                           API_SCM_TO_STRING(color_delim),
                                           API_SCM_TO_STRING(color_bg),
